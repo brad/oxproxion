@@ -183,6 +183,9 @@ class MainActivity : AppCompatActivity() {
         })
         startForegroundService()
        // if (sharedPreferencesHelper.getNotiPreference()) startForegroundService()
+        if (sharedPreferencesHelper.getAutoCheckUpdatesEnabled()) {
+            UpdateManager.checkForUpdates(this, isStartup = true)
+        }
     }
     override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
