@@ -32,6 +32,8 @@ class SharedPreferencesHelper(context: Context) {
         this.timeoutListener = listener
     }
     companion object {
+        private const val KEY_AUTO_CHECK_UPDATES = "auto_check_updates_enabled"
+
         private const val KEY_WATERMARK_STT_ENABLED = "watermark_stt_enabled"
 
         private const val KEY_VOICE_INPUT_MODEL = "voice_input_model"
@@ -545,6 +547,9 @@ class SharedPreferencesHelper(context: Context) {
     fun saveKeepScreenOnPreference(enabled: Boolean) {
         mainPrefs.edit { putBoolean(KEY_KEEP_SCREEN_ON, enabled) }
     }
+    fun getAutoCheckUpdatesEnabled(): Boolean = mainPrefs.getBoolean(KEY_AUTO_CHECK_UPDATES, true)
+    fun saveAutoCheckUpdatesEnabled(enabled: Boolean) = mainPrefs.edit { putBoolean(KEY_AUTO_CHECK_UPDATES, enabled) }
+
     fun getWatermarkSttEnabled(): Boolean = mainPrefs.getBoolean(KEY_WATERMARK_STT_ENABLED, false)
 
     fun saveWatermarkSttEnabled(enabled: Boolean) {
