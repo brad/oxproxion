@@ -29,19 +29,46 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      - name: Sign APK
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-
-      - name: Rename Signed APK
+      - name: Sign and Prepare APK
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          ALIAS: ${{ secrets.ALIAS }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          mv ${{ steps.sign_app.outputs.signedReleaseFile }} app/build/outputs/apk/release/oxproxion-latest.apk
+          echo "Decoding keystore..."
+          echo "$SIGNING_KEY" | base64 --decode > /tmp/keystore.jks
+
+          echo "Finding apksigner..."
+          APKSIGNER=$(find $ANDROID_HOME/build-tools -name apksigner | sort -V | tail -n1)
+          if [ -z "$APKSIGNER" ]; then
+            echo "Error: apksigner not found!"
+            exit 1
+          else:
+            echo "Using apksigner at: $APKSIGNER"
+
+            echo "Finding unsigned APK..."
+            UNSIGNED_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n1)
+            if [ -z "$UNSIGNED_APK" ]; then
+              echo "Error: No APK found to sign!"
+              exit 1
+            else:
+              echo "Found APK to sign: $UNSIGNED_APK"
+
+              echo "Signing APK..."
+              $APKSIGNER sign --ks /tmp/keystore.jks \
+                --ks-key-alias "$ALIAS" \
+                --ks-pass pass:"$KEY_STORE_PASSWORD" \
+                --key-pass pass:"$KEY_PASSWORD" \
+                --out app/build/outputs/apk/release/oxproxion-latest.apk \
+                "$UNSIGNED_APK"
+
+              echo "Cleaning up keystore..."
+              rm -f /tmp/keystore.jks
+
+              echo "Signing complete. Output at app/build/outputs/apk/release/oxproxion-latest.apk"
+            fi
+          fi
 
       - name: Delete existing "latest" release and tag
         env:
