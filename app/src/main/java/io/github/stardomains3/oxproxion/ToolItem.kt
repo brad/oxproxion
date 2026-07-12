@@ -139,6 +139,36 @@ data class ToolItem(
                 displayName = "Wait / Delay",
                 description = "Pauses execution for a specified duration (10-600 seconds). Use for timed delays between repeated actions.",
                 isEnabled = "wait" in enabledSet
+            ),
+            ToolItem(
+                name = "github_get_file",
+                displayName = "GitHub: Get File Content",
+                description = "Fetches the details and content of a file from a GitHub repository.",
+                isEnabled = "github_get_file" in enabledSet
+            ),
+            ToolItem(
+                name = "github_create_or_update_file",
+                displayName = "GitHub: Create or Update File",
+                description = "Creates a new file or updates an existing file in a GitHub repository with specified content.",
+                isEnabled = "github_create_or_update_file" in enabledSet
+            ),
+            ToolItem(
+                name = "github_create_branch",
+                displayName = "GitHub: Create Branch",
+                description = "Creates a new branch in a GitHub repository from a base branch (e.g., 'main').",
+                isEnabled = "github_create_branch" in enabledSet
+            ),
+            ToolItem(
+                name = "github_create_pull_request",
+                displayName = "GitHub: Create Pull Request",
+                description = "Creates a new pull request (PR) in a GitHub repository to merge changes between branches.",
+                isEnabled = "github_create_pull_request" in enabledSet
+            ),
+            ToolItem(
+                name = "github_list_files",
+                displayName = "GitHub: List Files",
+                description = "Lists files and directories at a specific path in a GitHub repository.",
+                isEnabled = "github_list_files" in enabledSet
             )
 
             // Add more tools here as your app grows

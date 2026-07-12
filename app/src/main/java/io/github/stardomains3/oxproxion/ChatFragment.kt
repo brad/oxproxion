@@ -3810,16 +3810,18 @@ $cleanContent
         val allItems = ToolItem.getAllToolItems(effectiveEnabledSet)
 
         // --- NEW LOGIC: FILTERING ---
-        // 4️⃣ Check if Brave API key exists
+        // 4️⃣ Check if Brave API key exists and GitHub token exists
         val braveApiKey = sharedPreferencesHelper.getApiKeyFromPrefs("brave_search_api_key")
         val hasBraveKey = braveApiKey.isNotEmpty()
+        val githubToken = sharedPreferencesHelper.getApiKeyFromPrefs("github_token")
+        val hasGithubToken = githubToken.isNotEmpty()
 
-        // 5️⃣ Filter the list: Keep everything UNLESS it's brave_search and we don't have a key
+        // 5️⃣ Filter the list: Keep everything UNLESS it's brave_search and we don't have a key, or starts with github_ and we don't have a token
         val filteredItems = allItems.filter { item ->
-            if (item.name == "brave_search" || item.name == "find_nearby_places") {
-                hasBraveKey // Only keep Brave tools if key exists
-            } else {
-                true // Keep all other tools
+            when {
+                item.name == "brave_search" || item.name == "find_nearby_places" -> hasBraveKey
+                item.name.startsWith("github_") -> hasGithubToken
+                else -> true
             }
         }
         // ----------------------------
