@@ -1,4 +1,3 @@
-
 package io.github.stardomains3.oxproxion
 
 import android.content.res.ColorStateList
@@ -52,6 +51,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         val scrollProgressSwitch = view.findViewById<MaterialSwitch>(R.id.scrollProgressSwitch)
         val apiKeyButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.apiKeyButton)
         val braveApiKeyButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.braveApiKeyButton)
+        val githubTokenButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.githubTokenButton)
         val promptsButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.promptsButton)
         val creditsButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.creditsButton)
         val helpButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.helpButton)
@@ -60,7 +60,10 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         val openRouterTransformsSwitch = view.findViewById<MaterialSwitch>(R.id.openRouterTransformsSwitch)
         val voiceModelEdit = view.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.voiceInputModelEdit)
         val voiceProviderToggle = view.findViewById<com.google.android.material.button.MaterialButtonToggleGroup>(R.id.voiceInputProviderToggle)
+        val checkUpdatesButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.checkUpdatesButton)
+        val autoCheckUpdatesSwitch = view.findViewById<MaterialSwitch>(R.id.autoCheckUpdatesSwitch)
         biometricsSwitch.isChecked = prefs.getBiometricEnabled()
+        autoCheckUpdatesSwitch.isChecked = prefs.getAutoCheckUpdatesEnabled()
         notificationsSwitch.isChecked = prefs.getNotiPreference()
         autoBackSwitch.isChecked = prefs.getAutoBack()
         val memoryCount = prefs.getChatMemoryCount()
@@ -107,6 +110,10 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             val dialog = SaveBraveApiDialogFragment()
             dialog.show(childFragmentManager, SaveBraveApiDialogFragment.TAG)
         }
+        githubTokenButton.setOnClickListener {
+            val dialog = SaveGithubTokenDialogFragment()
+            dialog.show(childFragmentManager, SaveGithubTokenDialogFragment.TAG)
+        }
         chatMemoryButton.setOnClickListener {
             val dialog = ChatMemoryDialogFragment()
             dialog.show(childFragmentManager, "ChatMemoryDialogFragment")
@@ -114,6 +121,13 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         autoBackSwitch.setOnCheckedChangeListener { _, isChecked ->
             prefs.saveAutoBack(isChecked)
+        }
+        autoCheckUpdatesSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.saveAutoCheckUpdatesEnabled(isChecked)
+        }
+        checkUpdatesButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Checking for updates...", Toast.LENGTH_SHORT).show()
+            UpdateManager.checkForUpdates(requireContext(), isStartup = false)
         }
         extendedDockSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.toggleExtendedDock()  // VM saves + notifies Chat
@@ -277,6 +291,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         // 🔥 STYLE ALL SWITCHES (your exact code → reusable)
         listOf(
             R.id.watermarkSttSwitch,
+            R.id.autoCheckUpdatesSwitch,
                     R.id.scrollButtonsSwitch,
             R.id.volumeScrollSwitch,
             R.id.expandableInputSwitch,
