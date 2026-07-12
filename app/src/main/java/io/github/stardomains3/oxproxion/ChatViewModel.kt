@@ -47,6 +47,7 @@ import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.preparePost
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -1737,6 +1738,194 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                     }
                 )
             ),
+            Tool(
+                type = "function",
+                function = FunctionTool(
+                    name = "github_get_file",
+                    description = "Fetches the details and content of a file from a specified GitHub repository.",
+                    parameters = buildJsonObject {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("owner") {
+                                put("type", "string")
+                                put("description", "The owner of the GitHub repository (e.g., 'octocat').")
+                            }
+                            putJsonObject("repo") {
+                                put("type", "string")
+                                put("description", "The name of the repository (e.g., 'hello-world').")
+                            }
+                            putJsonObject("path") {
+                                put("type", "string")
+                                put("description", "The path of the file within the repository (e.g., 'src/main.js').")
+                            }
+                            putJsonObject("ref") {
+                                put("type", "string")
+                                put("description", "Optional name of the commit/branch/tag. Default: the repository's default branch.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add(JsonPrimitive("owner"))
+                            add(JsonPrimitive("repo"))
+                            add(JsonPrimitive("path"))
+                        }
+                    }
+                )
+            ),
+            Tool(
+                type = "function",
+                function = FunctionTool(
+                    name = "github_create_or_update_file",
+                    description = "Creates a new file or updates an existing file in a specified GitHub repository with specified content. If updating, the tool automatically fetches the file's current SHA for you if not provided.",
+                    parameters = buildJsonObject {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("owner") {
+                                put("type", "string")
+                                put("description", "The owner of the GitHub repository.")
+                            }
+                            putJsonObject("repo") {
+                                put("type", "string")
+                                put("description", "The name of the repository.")
+                            }
+                            putJsonObject("path") {
+                                put("type", "string")
+                                put("description", "The path of the file to create or update.")
+                            }
+                            putJsonObject("content") {
+                                put("type", "string")
+                                put("description", "The text content to write to the file.")
+                            }
+                            putJsonObject("message") {
+                                put("type", "string")
+                                put("description", "The commit message.")
+                            }
+                            putJsonObject("branch") {
+                                put("type", "string")
+                                put("description", "Optional branch name to commit to. Default: the repository's default branch.")
+                            }
+                            putJsonObject("sha") {
+                                put("type", "string")
+                                put("description", "Optional SHA of the file being replaced. Omit to let the tool automatically resolve it or for creating new files.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add(JsonPrimitive("owner"))
+                            add(JsonPrimitive("repo"))
+                            add(JsonPrimitive("path"))
+                            add(JsonPrimitive("content"))
+                            add(JsonPrimitive("message"))
+                        }
+                    }
+                )
+            ),
+            Tool(
+                type = "function",
+                function = FunctionTool(
+                    name = "github_create_branch",
+                    description = "Creates a new branch in a specified GitHub repository from a base branch.",
+                    parameters = buildJsonObject {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("owner") {
+                                put("type", "string")
+                                put("description", "The owner of the GitHub repository.")
+                            }
+                            putJsonObject("repo") {
+                                put("type", "string")
+                                put("description", "The name of the repository.")
+                            }
+                            putJsonObject("branch") {
+                                put("type", "string")
+                                put("description", "The name of the new branch (e.g., 'feature-new-login').")
+                            }
+                            putJsonObject("base") {
+                                put("type", "string")
+                                put("description", "Optional base branch from which to create the new branch. Default: 'main'.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add(JsonPrimitive("owner"))
+                            add(JsonPrimitive("repo"))
+                            add(JsonPrimitive("branch"))
+                        }
+                    }
+                )
+            ),
+            Tool(
+                type = "function",
+                function = FunctionTool(
+                    name = "github_create_pull_request",
+                    description = "Creates a new pull request (PR) in a specified GitHub repository to merge changes between branches.",
+                    parameters = buildJsonObject {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("owner") {
+                                put("type", "string")
+                                put("description", "The owner of the GitHub repository.")
+                            }
+                            putJsonObject("repo") {
+                                put("type", "string")
+                                put("description", "The name of the repository.")
+                            }
+                            putJsonObject("title") {
+                                put("type", "string")
+                                put("description", "The title of the pull request.")
+                            }
+                            putJsonObject("head") {
+                                put("type", "string")
+                                put("description", "The name of the branch where your changes are implemented (e.g., 'feature-new-login').")
+                            }
+                            putJsonObject("base") {
+                                put("type", "string")
+                                put("description", "The name of the branch you want the changes pulled into (e.g., 'main').")
+                            }
+                            putJsonObject("body") {
+                                put("type", "string")
+                                put("description", "Optional description body of the pull request.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add(JsonPrimitive("owner"))
+                            add(JsonPrimitive("repo"))
+                            add(JsonPrimitive("title"))
+                            add(JsonPrimitive("head"))
+                            add(JsonPrimitive("base"))
+                        }
+                    }
+                )
+            ),
+            Tool(
+                type = "function",
+                function = FunctionTool(
+                    name = "github_list_files",
+                    description = "Lists files and directories at a specific path in a specified GitHub repository.",
+                    parameters = buildJsonObject {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("owner") {
+                                put("type", "string")
+                                put("description", "The owner of the GitHub repository.")
+                            }
+                            putJsonObject("repo") {
+                                put("type", "string")
+                                put("description", "The name of the repository.")
+                            }
+                            putJsonObject("path") {
+                                put("type", "string")
+                                put("description", "Optional directory path (e.g., 'src'). Leave empty to list the repository root.")
+                            }
+                            putJsonObject("ref") {
+                                put("type", "string")
+                                put("description", "Optional name of the commit/branch/tag. Default: the repository's default branch.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add(JsonPrimitive("owner"))
+                            add(JsonPrimitive("repo"))
+                        }
+                    }
+                )
+            ),
             // Add more tools here as your app grows – the filtering logic below stays the same!
         )
 
@@ -2349,6 +2538,96 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         }
                     } catch (e: Exception) {
                         "Error checking location permissions: ${e.message}"
+                    }
+                }
+                "github_get_file" -> {
+                    try {
+                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
+                        val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
+                        val path = arguments["path"]?.jsonPrimitive?.content ?: ""
+                        val ref = arguments["ref"]?.jsonPrimitive?.contentOrNull
+
+                        if (owner.isBlank() || repo.isBlank() || path.isBlank()) {
+                            "Error: owner, repo, and path are required parameters."
+                        } else {
+                            githubGetFile(owner, repo, path, ref)
+                        }
+                    } catch (e: Exception) {
+                        "Error: Failed to fetch file from GitHub - ${e.message}"
+                    }
+                }
+                "github_create_or_update_file" -> {
+                    try {
+                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
+                        val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
+                        val path = arguments["path"]?.jsonPrimitive?.content ?: ""
+                        val contentVal = arguments["content"]?.jsonPrimitive?.content ?: ""
+                        val message = arguments["message"]?.jsonPrimitive?.content ?: ""
+                        val branch = arguments["branch"]?.jsonPrimitive?.contentOrNull
+                        val sha = arguments["sha"]?.jsonPrimitive?.contentOrNull
+
+                        if (owner.isBlank() || repo.isBlank() || path.isBlank() || contentVal.isBlank() || message.isBlank()) {
+                            "Error: owner, repo, path, content, and message are required parameters."
+                        } else {
+                            githubCreateOrUpdateFile(owner, repo, path, contentVal, message, branch, sha)
+                        }
+                    } catch (e: Exception) {
+                        "Error: Failed to create or update file on GitHub - ${e.message}"
+                    }
+                }
+                "github_create_branch" -> {
+                    try {
+                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
+                        val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
+                        val branch = arguments["branch"]?.jsonPrimitive?.content ?: ""
+                        val base = arguments["base"]?.jsonPrimitive?.contentOrNull
+
+                        if (owner.isBlank() || repo.isBlank() || branch.isBlank()) {
+                            "Error: owner, repo, and branch are required parameters."
+                        } else {
+                            githubCreateBranch(owner, repo, branch, base)
+                        }
+                    } catch (e: Exception) {
+                        "Error: Failed to create branch on GitHub - ${e.message}"
+                    }
+                }
+                "github_create_pull_request" -> {
+                    try {
+                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
+                        val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
+                        val title = arguments["title"]?.jsonPrimitive?.content ?: ""
+                        val head = arguments["head"]?.jsonPrimitive?.content ?: ""
+                        val base = arguments["base"]?.jsonPrimitive?.content ?: ""
+                        val body = arguments["body"]?.jsonPrimitive?.contentOrNull
+
+                        if (owner.isBlank() || repo.isBlank() || title.isBlank() || head.isBlank() || base.isBlank()) {
+                            "Error: owner, repo, title, head, and base are required parameters."
+                        } else {
+                            githubCreatePullRequest(owner, repo, title, head, base, body)
+                        }
+                    } catch (e: Exception) {
+                        "Error: Failed to create pull request on GitHub - ${e.message}"
+                    }
+                }
+                "github_list_files" -> {
+                    try {
+                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
+                        val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
+                        val path = arguments["path"]?.jsonPrimitive?.contentOrNull ?: ""
+                        val ref = arguments["ref"]?.jsonPrimitive?.contentOrNull
+
+                        if (owner.isBlank() || repo.isBlank()) {
+                            "Error: owner and repo are required parameters."
+                        } else {
+                            githubListFiles(owner, repo, path, ref)
+                        }
+                    } catch (e: Exception) {
+                        "Error: Failed to list files from GitHub - ${e.message}"
                     }
                 }
                 "brave_search" -> {
@@ -2997,6 +3276,321 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+    private suspend fun githubGetFile(
+        owner: String,
+        repo: String,
+        path: String,
+        ref: String?
+    ): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                val githubToken = sharedPreferencesHelper.getApiKeyFromPrefs("github_token")
+                if (githubToken.isBlank()) {
+                    return@withContext "Error: GitHub Personal Access Token is not set in settings. Please set it under Settings > GitHub Token."
+                }
+
+                val urlBuilder = StringBuilder("https://api.github.com/repos/$owner/$repo/contents/$path")
+                if (!ref.isNullOrBlank()) {
+                    urlBuilder.append("?ref=").append(java.net.URLEncoder.encode(ref, "UTF-8"))
+                }
+
+                val response = httpClient.get(urlBuilder.toString()) {
+                    header("Authorization", "Bearer $githubToken")
+                    header("Accept", "application/vnd.github+json")
+                    header("X-GitHub-Api-Version", "2022-11-28")
+                    header("User-Agent", "oxproxion")
+                }
+
+                if (!response.status.isSuccess()) {
+                    val errorBody = try { response.bodyAsText() } catch (ex: Exception) { "No details" }
+                    return@withContext "GitHub API Error (Get File): ${response.status} – $errorBody"
+                }
+
+                val jsonResponse = response.body<JsonObject>()
+                val type = jsonResponse["type"]?.jsonPrimitive?.content ?: "file"
+                if (type == "dir") {
+                    return@withContext "Error: '$path' is a directory, not a file. Please use 'github_list_files' to list its contents."
+                }
+
+                val sha = jsonResponse["sha"]?.jsonPrimitive?.content ?: ""
+                val size = jsonResponse["size"]?.jsonPrimitive?.intOrNull ?: 0
+                val encodedContent = jsonResponse["content"]?.jsonPrimitive?.content ?: ""
+                val cleanEncoded = encodedContent.replace("\n", "").replace("\r", "")
+                val decodedText = try {
+                    val decodedBytes = java.util.Base64.getDecoder().decode(cleanEncoded)
+                    String(decodedBytes, Charsets.UTF_8)
+                } catch (e: Exception) {
+                    "(Binary or undecodable base64 content)"
+                }
+
+                "File: $path\nSHA: $sha\nSize: $size bytes\n\nContent:\n$decodedText"
+            } catch (e: Exception) {
+                "Error: Failed to fetch file from GitHub – ${e.message}"
+            }
+        }
+    }
+
+    private suspend fun githubCreateOrUpdateFile(
+        owner: String,
+        repo: String,
+        path: String,
+        content: String,
+        message: String,
+        branch: String?,
+        sha: String?
+    ): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                val githubToken = sharedPreferencesHelper.getApiKeyFromPrefs("github_token")
+                if (githubToken.isBlank()) {
+                    return@withContext "Error: GitHub Personal Access Token is not set in settings. Please set it under Settings > GitHub Token."
+                }
+
+                // Resolve SHA if not provided
+                var resolvedSha = sha
+                if (resolvedSha.isNullOrBlank()) {
+                    val checkUrl = StringBuilder("https://api.github.com/repos/$owner/$repo/contents/$path")
+                    if (!branch.isNullOrBlank()) {
+                        checkUrl.append("?ref=").append(java.net.URLEncoder.encode(branch, "UTF-8"))
+                    }
+                    val checkResponse = httpClient.get(checkUrl.toString()) {
+                        header("Authorization", "Bearer $githubToken")
+                        header("Accept", "application/vnd.github+json")
+                        header("X-GitHub-Api-Version", "2022-11-28")
+                        header("User-Agent", "oxproxion")
+                    }
+                    if (checkResponse.status.isSuccess()) {
+                        val checkJson = checkResponse.body<JsonObject>()
+                        resolvedSha = checkJson["sha"]?.jsonPrimitive?.content
+                    }
+                }
+
+                val putUrl = "https://api.github.com/repos/$owner/$repo/contents/$path"
+                val encodedContent = java.util.Base64.getEncoder().encodeToString(content.toByteArray(Charsets.UTF_8))
+
+                val requestBody = buildJsonObject {
+                    put("message", message)
+                    put("content", encodedContent)
+                    if (!branch.isNullOrBlank()) {
+                        put("branch", branch)
+                    }
+                    if (!resolvedSha.isNullOrBlank()) {
+                        put("sha", resolvedSha)
+                    }
+                }
+
+                val response = httpClient.put(putUrl) {
+                    header("Authorization", "Bearer $githubToken")
+                    header("Accept", "application/vnd.github+json")
+                    header("X-GitHub-Api-Version", "2022-11-28")
+                    header("User-Agent", "oxproxion")
+                    contentType(ContentType.Application.Json)
+                    setBody(requestBody)
+                }
+
+                if (!response.status.isSuccess()) {
+                    val errorBody = try { response.bodyAsText() } catch (ex: Exception) { "No details" }
+                    return@withContext "GitHub API Error (Create/Update File): ${response.status} – $errorBody"
+                }
+
+                val responseJson = response.body<JsonObject>()
+                val commitHtmlUrl = responseJson["commit"]?.jsonObject?.get("html_url")?.jsonPrimitive?.content ?: ""
+                val fileHtmlUrl = responseJson["content"]?.jsonObject?.get("html_url")?.jsonPrimitive?.content ?: ""
+
+                "Successfully updated/created file '$path'.\nCommit: $commitHtmlUrl\nFile: $fileHtmlUrl"
+            } catch (e: Exception) {
+                "Error: Failed to create or update file on GitHub – ${e.message}"
+            }
+        }
+    }
+
+    private suspend fun githubCreateBranch(
+        owner: String,
+        repo: String,
+        branch: String,
+        base: String?
+    ): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                val githubToken = sharedPreferencesHelper.getApiKeyFromPrefs("github_token")
+                if (githubToken.isBlank()) {
+                    return@withContext "Error: GitHub Personal Access Token is not set in settings. Please set it under Settings > GitHub Token."
+                }
+
+                // 1. Get SHA of base branch
+                val baseBranch = base ?: "main"
+                var baseRefUrl = "https://api.github.com/repos/$owner/$repo/git/ref/heads/$baseBranch"
+                var baseResponse = httpClient.get(baseRefUrl) {
+                    header("Authorization", "Bearer $githubToken")
+                    header("Accept", "application/vnd.github+json")
+                    header("X-GitHub-Api-Version", "2022-11-28")
+                    header("User-Agent", "oxproxion")
+                }
+
+                if (!baseResponse.status.isSuccess() && base == null) {
+                    // Try "master" if default main was not specified and failed
+                    val masterRefUrl = "https://api.github.com/repos/$owner/$repo/git/ref/heads/master"
+                    val masterResponse = httpClient.get(masterRefUrl) {
+                        header("Authorization", "Bearer $githubToken")
+                        header("Accept", "application/vnd.github+json")
+                        header("X-GitHub-Api-Version", "2022-11-28")
+                        header("User-Agent", "oxproxion")
+                    }
+                    if (masterResponse.status.isSuccess()) {
+                        baseResponse = masterResponse
+                    }
+                }
+
+                if (!baseResponse.status.isSuccess()) {
+                    val errorBody = try { baseResponse.bodyAsText() } catch (ex: Exception) { "No details" }
+                    return@withContext "GitHub API Error (Get Base Branch SHA): ${baseResponse.status} – $errorBody"
+                }
+
+                val baseJson = baseResponse.body<JsonObject>()
+                val baseSha = baseJson["object"]?.jsonObject?.get("sha")?.jsonPrimitive?.content
+                    ?: return@withContext "Error: Could not retrieve SHA of base branch."
+
+                // 2. Create the reference
+                val ref = "refs/heads/$branch"
+                val createRefUrl = "https://api.github.com/repos/$owner/$repo/git/refs"
+                val requestBody = buildJsonObject {
+                    put("ref", ref)
+                    put("sha", baseSha)
+                }
+
+                val createResponse = httpClient.post(createRefUrl) {
+                    header("Authorization", "Bearer $githubToken")
+                    header("Accept", "application/vnd.github+json")
+                    header("X-GitHub-Api-Version", "2022-11-28")
+                    header("User-Agent", "oxproxion")
+                    contentType(ContentType.Application.Json)
+                    setBody(requestBody)
+                }
+
+                if (!createResponse.status.isSuccess()) {
+                    val errorBody = try { createResponse.bodyAsText() } catch (ex: Exception) { "No details" }
+                    return@withContext "GitHub API Error (Create Reference): ${createResponse.status} – $errorBody"
+                }
+
+                "Successfully created branch '$branch' from base commit $baseSha."
+            } catch (e: Exception) {
+                "Error: Failed to create branch on GitHub – ${e.message}"
+            }
+        }
+    }
+
+    private suspend fun githubCreatePullRequest(
+        owner: String,
+        repo: String,
+        title: String,
+        head: String,
+        base: String,
+        body: String?
+    ): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                val githubToken = sharedPreferencesHelper.getApiKeyFromPrefs("github_token")
+                if (githubToken.isBlank()) {
+                    return@withContext "Error: GitHub Personal Access Token is not set in settings. Please set it under Settings > GitHub Token."
+                }
+
+                val url = "https://api.github.com/repos/$owner/$repo/pulls"
+                val requestBody = buildJsonObject {
+                    put("title", title)
+                    put("head", head)
+                    put("base", base)
+                    if (!body.isNullOrBlank()) {
+                        put("body", body)
+                    }
+                }
+
+                val response = httpClient.post(url) {
+                    header("Authorization", "Bearer $githubToken")
+                    header("Accept", "application/vnd.github+json")
+                    header("X-GitHub-Api-Version", "2022-11-28")
+                    header("User-Agent", "oxproxion")
+                    contentType(ContentType.Application.Json)
+                    setBody(requestBody)
+                }
+
+                if (!response.status.isSuccess()) {
+                    val errorBody = try { response.bodyAsText() } catch (ex: Exception) { "No details" }
+                    return@withContext "GitHub API Error (Create PR): ${response.status} – $errorBody"
+                }
+
+                val responseJson = response.body<JsonObject>()
+                val htmlUrl = responseJson["html_url"]?.jsonPrimitive?.content ?: ""
+                val prNumber = responseJson["number"]?.jsonPrimitive?.intOrNull ?: 0
+
+                "Successfully created Pull Request #$prNumber.\nLink: $htmlUrl"
+            } catch (e: Exception) {
+                "Error: Failed to create Pull Request on GitHub – ${e.message}"
+            }
+        }
+    }
+
+    private suspend fun githubListFiles(
+        owner: String,
+        repo: String,
+        path: String,
+        ref: String?
+    ): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                val githubToken = sharedPreferencesHelper.getApiKeyFromPrefs("github_token")
+                if (githubToken.isBlank()) {
+                    return@withContext "Error: GitHub Personal Access Token is not set in settings. Please set it under Settings > GitHub Token."
+                }
+
+                val urlBuilder = StringBuilder("https://api.github.com/repos/$owner/$repo/contents/$path")
+                if (!ref.isNullOrBlank()) {
+                    urlBuilder.append("?ref=").append(java.net.URLEncoder.encode(ref, "UTF-8"))
+                }
+
+                val response = httpClient.get(urlBuilder.toString()) {
+                    header("Authorization", "Bearer $githubToken")
+                    header("Accept", "application/vnd.github+json")
+                    header("X-GitHub-Api-Version", "2022-11-28")
+                    header("User-Agent", "oxproxion")
+                }
+
+                if (!response.status.isSuccess()) {
+                    val errorBody = try { response.bodyAsText() } catch (ex: Exception) { "No details" }
+                    return@withContext "GitHub API Error (List Files): ${response.status} – $errorBody"
+                }
+
+                val jsonResponse = response.body<kotlinx.serialization.json.JsonElement>()
+                val sb = StringBuilder()
+                if (jsonResponse is kotlinx.serialization.json.JsonArray) {
+                    sb.appendLine("Contents of '$path' in repository $owner/$repo:")
+                    for (element in jsonResponse) {
+                        val obj = element as? JsonObject ?: continue
+                        val name = obj["name"]?.jsonPrimitive?.content ?: ""
+                        val type = obj["type"]?.jsonPrimitive?.content ?: ""
+                        val size = obj["size"]?.jsonPrimitive?.intOrNull ?: 0
+                        val typeIndicator = if (type == "dir") "[DIR]" else "[FILE]"
+                        sb.appendLine("- $name $typeIndicator (${size} bytes)")
+                    }
+                } else if (jsonResponse is JsonObject) {
+                    val type = jsonResponse["type"]?.jsonPrimitive?.content ?: ""
+                    if (type == "file") {
+                        sb.appendLine("Path '$path' is a file, not a directory.")
+                        val size = jsonResponse["size"]?.jsonPrimitive?.intOrNull ?: 0
+                        sb.appendLine("Name: ${jsonResponse["name"]?.jsonPrimitive?.content}")
+                        sb.appendLine("Size: $size bytes")
+                        sb.appendLine("Use 'github_get_file' to view its contents.")
+                    } else {
+                        sb.appendLine("Path '$path' type: $type")
+                    }
+                }
+
+                sb.toString()
+            } catch (e: Exception) {
+                "Error: Failed to list files from GitHub – ${e.message}"
+            }
+        }
+    }
+
     private suspend fun searchBrave(
         query: String,
         type: String,

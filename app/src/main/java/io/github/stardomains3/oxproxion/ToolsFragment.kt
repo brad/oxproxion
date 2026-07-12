@@ -101,11 +101,17 @@ class ToolsFragment : Fragment(R.layout.fragment_tools) {
 
         var allItems = ToolItem.getAllToolItems(effectiveEnabledSet)
 
-        // Filter Brave
+        // Filter Brave and GitHub
         val braveApiKey = sharedPreferencesHelper.getApiKeyFromPrefs("brave_search_api_key")
         val hasBraveKey = braveApiKey.isNotEmpty()
+        val githubToken = sharedPreferencesHelper.getApiKeyFromPrefs("github_token")
+        val hasGithubToken = githubToken.isNotEmpty()
         allItems = allItems.filter { item ->
-            if (item.name == "brave_search" || item.name == "find_nearby_places") hasBraveKey else true
+            when {
+                item.name == "brave_search" || item.name == "find_nearby_places" -> hasBraveKey
+                item.name.startsWith("github_") -> hasGithubToken
+                else -> true
+            }
         }
 
         // Check Permissions
