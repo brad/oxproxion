@@ -1,4 +1,3 @@
-
 package io.github.stardomains3.oxproxion
 
 import android.content.res.ColorStateList
@@ -52,6 +51,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         val scrollProgressSwitch = view.findViewById<MaterialSwitch>(R.id.scrollProgressSwitch)
         val apiKeyButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.apiKeyButton)
         val braveApiKeyButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.braveApiKeyButton)
+        val githubTokenButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.githubTokenButton)
         val promptsButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.promptsButton)
         val creditsButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.creditsButton)
         val helpButton = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.helpButton)
@@ -109,6 +109,10 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         braveApiKeyButton.setOnClickListener {
             val dialog = SaveBraveApiDialogFragment()
             dialog.show(childFragmentManager, SaveBraveApiDialogFragment.TAG)
+        }
+        githubTokenButton.setOnClickListener {
+            val dialog = SaveGithubTokenDialogFragment()
+            dialog.show(childFragmentManager, SaveGithubTokenDialogFragment.TAG)
         }
         chatMemoryButton.setOnClickListener {
             val dialog = ChatMemoryDialogFragment()
