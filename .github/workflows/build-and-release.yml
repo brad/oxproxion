@@ -1,0 +1,61 @@
+name: Build and Release Latest APK
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    name: Build & Sign APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant Execute Permission to Gradlew
+        run: chmod +x gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Sign APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Rename Signed APK
+        run: |
+          mv ${{ steps.sign_app.outputs.signedReleaseFile }} app/build/outputs/apk/release/oxproxion-latest.apk
+
+      - name: Delete existing "latest" release and tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Delete the release and its associated git tag to ensure the new one points to the latest commit
+          gh release delete latest --yes --cleanup-tag || true
+
+      - name: Create and Upload to "latest" Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create latest \
+            --title "Latest Development Build" \
+            --notes "Automated release of the latest APK compiled from the develop branch." \
+            --target develop \
+            app/build/outputs/apk/release/oxproxion-latest.apk
