@@ -39,7 +39,20 @@ data class ChatRequest(
     val imageConfig: ImageConfig? = null,
     val plugins: List<Plugin>? = null,
     @SerialName("web_search_options")
-    val webSearchOptions: WebSearchOptions? = null
+    val webSearchOptions: WebSearchOptions? = null,
+    val provider: ProviderSettings? = null
+)
+
+@Serializable
+data class ProviderSettings(
+    @SerialName("require_parameters") val requireParameters: Boolean? = null,
+    val limit: Int? = null,
+    val order: List<String>? = null,
+    @SerialName("allow_fallbacks") val allowFallbacks: Boolean? = null,
+    @SerialName("data_collection") val dataCollection: String? = null,
+    val sort: String? = null,
+    val ignore: List<String>? = null,
+    val only: List<String>? = null
 )
 
 @Serializable
