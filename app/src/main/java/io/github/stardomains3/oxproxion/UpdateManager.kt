@@ -60,7 +60,7 @@ object UpdateManager {
         scope.launch {
             try {
                 val request = Request.Builder()
-                    .url("https://api.github.com/repos/stardomains3/oxproxion/releases/latest")
+                    .url("https://api.github.com/repos/brad/oxproxion/releases/latest")
                     .header("User-Agent", "oxproxion-app")
                     .build()
 
