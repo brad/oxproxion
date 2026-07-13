@@ -4022,6 +4022,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 plugins = buildWebSearchPlugin(),
                 webSearchOptions = webSearchOpts,
                 toolChoice = if (_isToolsEnabled.value == true) "auto" else null,
+                provider = if (_isToolsEnabled.value == true) ProviderSettings(requireParameters = true) else null,
                 // === INFERENCE PARAMETERS ===
                 temperature = if (sharedPreferencesHelper.getInferenceTempEnabled()) sharedPreferencesHelper.getInferenceTempValue().toDoubleOrNull() else null,
                 topP = if (sharedPreferencesHelper.getInferenceTopPEnabled()) sharedPreferencesHelper.getInferenceTopPValue().toDoubleOrNull() else null,
@@ -4587,6 +4588,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                     toolChoice = if (_isToolsEnabled.value == true) "auto" else null,
                     plugins = buildWebSearchPlugin(),
                     webSearchOptions = webSearchOpts,
+                    provider = if (_isToolsEnabled.value == true) ProviderSettings(requireParameters = true) else null,
                     // === INFERENCE PARAMETERS ===
                     temperature = if (sharedPreferencesHelper.getInferenceTempEnabled()) sharedPreferencesHelper.getInferenceTempValue().toDoubleOrNull() else null,
                     topP = if (sharedPreferencesHelper.getInferenceTopPEnabled()) sharedPreferencesHelper.getInferenceTopPValue().toDoubleOrNull() else null,
