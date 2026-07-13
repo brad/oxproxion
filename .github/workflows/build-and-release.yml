@@ -44,7 +44,7 @@ jobs:
           if [ -z "$APKSIGNER" ]; then
             echo "Error: apksigner not found!"
             exit 1
-          else:
+          else
             echo "Using apksigner at: $APKSIGNER"
 
             echo "Finding unsigned APK..."
@@ -52,7 +52,7 @@ jobs:
             if [ -z "$UNSIGNED_APK" ]; then
               echo "Error: No APK found to sign!"
               exit 1
-            else:
+            else
               echo "Found APK to sign: $UNSIGNED_APK"
 
               echo "Signing APK..."
