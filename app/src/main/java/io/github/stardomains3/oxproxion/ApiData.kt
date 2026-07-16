@@ -82,7 +82,8 @@ data class FlexibleMessage(
     val reasoning: String? = null,
     val thinking: String? = null,
     @SerialName("image_uri")  // NEW: String for serialization (parse to Uri later)
-    val imageUri: String? = null  // For user/generated images (original Uri.toString())
+    val imageUri: String? = null,  // For user/generated images (original Uri.toString())
+    val name: String? = null
 )
 
 @Serializable

@@ -2542,24 +2542,34 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 "github_get_file" -> {
                     try {
-                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val argumentsStr = toolCall.function.arguments
+                        Log.d("GitHubTool", "github_get_file called with arguments: " + argumentsStr)
+                        val arguments = json.decodeFromString<JsonObject>(argumentsStr)
                         val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
                         val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
                         val path = arguments["path"]?.jsonPrimitive?.content ?: ""
                         val ref = arguments["ref"]?.jsonPrimitive?.contentOrNull
 
                         if (owner.isBlank() || repo.isBlank() || path.isBlank()) {
-                            "Error: owner, repo, and path are required parameters."
+                            val errorMsg = "Error: owner, repo, and path are required parameters."
+                            Log.e("GitHubTool", "github_get_file validation error: " + errorMsg)
+                            errorMsg
                         } else {
-                            githubGetFile(owner, repo, path, ref)
+                            val resultText = githubGetFile(owner, repo, path, ref)
+                            Log.d("GitHubTool", "github_get_file result: " + resultText)
+                            resultText
                         }
                     } catch (e: Exception) {
-                        "Error: Failed to fetch file from GitHub - ${e.message}"
+                        val errorMsg = "Error: Failed to fetch file from GitHub - " + e.message
+                        Log.e("GitHubTool", "github_get_file exception: " + e.message, e)
+                        errorMsg
                     }
                 }
                 "github_create_or_update_file" -> {
                     try {
-                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val argumentsStr = toolCall.function.arguments
+                        Log.d("GitHubTool", "github_create_or_update_file called with arguments: " + argumentsStr)
+                        val arguments = json.decodeFromString<JsonObject>(argumentsStr)
                         val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
                         val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
                         val path = arguments["path"]?.jsonPrimitive?.content ?: ""
@@ -2569,34 +2579,50 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         val sha = arguments["sha"]?.jsonPrimitive?.contentOrNull
 
                         if (owner.isBlank() || repo.isBlank() || path.isBlank() || contentVal.isBlank() || message.isBlank()) {
-                            "Error: owner, repo, path, content, and message are required parameters."
+                            val errorMsg = "Error: owner, repo, path, content, and message are required parameters."
+                            Log.e("GitHubTool", "github_create_or_update_file validation error: " + errorMsg)
+                            errorMsg
                         } else {
-                            githubCreateOrUpdateFile(owner, repo, path, contentVal, message, branch, sha)
+                            val resultText = githubCreateOrUpdateFile(owner, repo, path, contentVal, message, branch, sha)
+                            Log.d("GitHubTool", "github_create_or_update_file result: " + resultText)
+                            resultText
                         }
                     } catch (e: Exception) {
-                        "Error: Failed to create or update file on GitHub - ${e.message}"
+                        val errorMsg = "Error: Failed to create or update file on GitHub - " + e.message
+                        Log.e("GitHubTool", "github_create_or_update_file exception: " + e.message, e)
+                        errorMsg
                     }
                 }
                 "github_create_branch" -> {
                     try {
-                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val argumentsStr = toolCall.function.arguments
+                        Log.d("GitHubTool", "github_create_branch called with arguments: " + argumentsStr)
+                        val arguments = json.decodeFromString<JsonObject>(argumentsStr)
                         val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
                         val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
                         val branch = arguments["branch"]?.jsonPrimitive?.content ?: ""
                         val base = arguments["base"]?.jsonPrimitive?.contentOrNull
 
                         if (owner.isBlank() || repo.isBlank() || branch.isBlank()) {
-                            "Error: owner, repo, and branch are required parameters."
+                            val errorMsg = "Error: owner, repo, and branch are required parameters."
+                            Log.e("GitHubTool", "github_create_branch validation error: " + errorMsg)
+                            errorMsg
                         } else {
-                            githubCreateBranch(owner, repo, branch, base)
+                            val resultText = githubCreateBranch(owner, repo, branch, base)
+                            Log.d("GitHubTool", "github_create_branch result: " + resultText)
+                            resultText
                         }
                     } catch (e: Exception) {
-                        "Error: Failed to create branch on GitHub - ${e.message}"
+                        val errorMsg = "Error: Failed to create branch on GitHub - " + e.message
+                        Log.e("GitHubTool", "github_create_branch exception: " + e.message, e)
+                        errorMsg
                     }
                 }
                 "github_create_pull_request" -> {
                     try {
-                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val argumentsStr = toolCall.function.arguments
+                        Log.d("GitHubTool", "github_create_pull_request called with arguments: " + argumentsStr)
+                        val arguments = json.decodeFromString<JsonObject>(argumentsStr)
                         val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
                         val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
                         val title = arguments["title"]?.jsonPrimitive?.content ?: ""
@@ -2605,29 +2631,43 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         val body = arguments["body"]?.jsonPrimitive?.contentOrNull
 
                         if (owner.isBlank() || repo.isBlank() || title.isBlank() || head.isBlank() || base.isBlank()) {
-                            "Error: owner, repo, title, head, and base are required parameters."
+                            val errorMsg = "Error: owner, repo, title, head, and base are required parameters."
+                            Log.e("GitHubTool", "github_create_pull_request validation error: " + errorMsg)
+                            errorMsg
                         } else {
-                            githubCreatePullRequest(owner, repo, title, head, base, body)
+                            val resultText = githubCreatePullRequest(owner, repo, title, head, base, body)
+                            Log.d("GitHubTool", "github_create_pull_request result: " + resultText)
+                            resultText
                         }
                     } catch (e: Exception) {
-                        "Error: Failed to create pull request on GitHub - ${e.message}"
+                        val errorMsg = "Error: Failed to create pull request on GitHub - " + e.message
+                        Log.e("GitHubTool", "github_create_pull_request exception: " + e.message, e)
+                        errorMsg
                     }
                 }
                 "github_list_files" -> {
                     try {
-                        val arguments = json.decodeFromString<JsonObject>(toolCall.function.arguments)
+                        val argumentsStr = toolCall.function.arguments
+                        Log.d("GitHubTool", "github_list_files called with arguments: " + argumentsStr)
+                        val arguments = json.decodeFromString<JsonObject>(argumentsStr)
                         val owner = arguments["owner"]?.jsonPrimitive?.content ?: ""
                         val repo = arguments["repo"]?.jsonPrimitive?.content ?: ""
                         val path = arguments["path"]?.jsonPrimitive?.contentOrNull ?: ""
                         val ref = arguments["ref"]?.jsonPrimitive?.contentOrNull
 
                         if (owner.isBlank() || repo.isBlank()) {
-                            "Error: owner and repo are required parameters."
+                            val errorMsg = "Error: owner and repo are required parameters."
+                            Log.e("GitHubTool", "github_list_files validation error: " + errorMsg)
+                            errorMsg
                         } else {
-                            githubListFiles(owner, repo, path, ref)
+                            val resultText = githubListFiles(owner, repo, path, ref)
+                            Log.d("GitHubTool", "github_list_files result: " + resultText)
+                            resultText
                         }
                     } catch (e: Exception) {
-                        "Error: Failed to list files from GitHub - ${e.message}"
+                        val errorMsg = "Error: Failed to list files from GitHub - " + e.message
+                        Log.e("GitHubTool", "github_list_files exception: " + e.message, e)
+                        errorMsg
                     }
                 }
                 "brave_search" -> {
@@ -2706,11 +2746,24 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
                 else -> "Error: Unknown tool call"
             }
+            val isGitHubTool = toolCall.function.name.startsWith("github_")
+            val contentElement = if (isGitHubTool) {
+                val contentJson = if (result.startsWith("Error")) {
+                    buildJsonObject { put("error", result) }.toString()
+                } else {
+                    buildJsonObject { put("result", result) }.toString()
+                }
+                JsonPrimitive(contentJson)
+            } else {
+                JsonPrimitive(result)
+            }
+
             toolResults.add(
                 FlexibleMessage(
                     role = "tool",
-                    content = JsonPrimitive(result),
-                    toolCallId = toolCall.id
+                    content = contentElement,
+                    toolCallId = toolCall.id,
+                    name = toolCall.function.name
                 )
             )
         }
