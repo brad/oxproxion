@@ -70,19 +70,24 @@ jobs:
             fi
           fi
 
-      - name: Delete existing "latest" release and tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract Version Name
+        id: version
         run: |
-          # Delete the release and its associated git tag to ensure the new one points to the latest commit
-          gh release delete latest --yes --cleanup-tag || true
+          VERSION=$(grep -E 'versionName\s*=\s*' app/build.gradle.kts | sed -E 's/.*versionName\s*=\s*"([^"]*)".*/\1/')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Create and Upload to "latest" Release
+      - name: Get Current Date
+        id: date
+        run: |
+          echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Create and Upload Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create latest \
-            --title "Latest Development Build" \
-            --notes "Automated release of the latest APK compiled from the develop branch." \
+          gh release create "v${{ steps.version.outputs.version }}" \
+            --title "v${{ steps.version.outputs.version }} (${{ steps.date.outputs.date }})" \
+            --notes "Automated release of APK compiled from the develop branch." \
             --target develop \
+            --latest \
             app/build/outputs/apk/release/oxproxion-latest.apk
