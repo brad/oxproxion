@@ -1,6 +1,8 @@
 package io.github.stardomains3.oxproxion
 
 import android.Manifest
+import android.util.Log
+import io.github.stardomains3.oxproxion.BuildConfig
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -106,6 +108,9 @@ class ToolsFragment : Fragment(R.layout.fragment_tools) {
         val hasBraveKey = braveApiKey.isNotEmpty()
         val githubToken = sharedPreferencesHelper.getApiKeyFromPrefs("github_token")
         val hasGithubToken = githubToken.isNotEmpty()
+        if (BuildConfig.DEBUG) {
+            Log.d("GithubTools", "Token present: ${hasGithubToken}, length: ${githubToken.length}")
+        }
         allItems = allItems.filter { item ->
             when {
                 item.name == "brave_search" || item.name == "find_nearby_places" -> hasBraveKey
