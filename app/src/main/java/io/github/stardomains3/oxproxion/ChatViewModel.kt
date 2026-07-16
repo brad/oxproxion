@@ -42,6 +42,10 @@ import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.timeout
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
@@ -217,6 +221,12 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             install(DefaultRequest) {
                 header("User-Agent", "oxproxion/${BuildConfig.VERSION_NAME}")
             }
+            if (BuildConfig.DEBUG) {
+                install(Logging) {
+                    logger = Logger.ANDROID
+                    level = LogLevel.BODY
+                }
+            }
             engine {
                 config {
 
@@ -239,6 +249,12 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             }
             install(DefaultRequest) {
                 header("User-Agent", "oxproxion/${BuildConfig.VERSION_NAME}")
+            }
+            if (BuildConfig.DEBUG) {
+                install(Logging) {
+                    logger = Logger.ANDROID
+                    level = LogLevel.BODY
+                }
             }
 
             engine {
@@ -1973,6 +1989,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         val toolResults = mutableListOf<FlexibleMessage>()
 
         for (toolCall in uniqueToolCalls) {  // Now looping over uniques only
+            if (BuildConfig.DEBUG) {
+                Log.d("ToolExec", "Tool call: name=${toolCall.function.name}, args=${toolCall.function.arguments}")
+            }
             val result: String = when (toolCall.function.name) {
                 "set_timer" -> {
                     try {
@@ -2554,6 +2573,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                             githubGetFile(owner, repo, path, ref)
                         }
                     } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) {
+                            Log.e("GithubTool", "Failed: ${e.message}", e)
+                        }
                         "Error: Failed to fetch file from GitHub - ${e.message}"
                     }
                 }
@@ -2574,6 +2596,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                             githubCreateOrUpdateFile(owner, repo, path, contentVal, message, branch, sha)
                         }
                     } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) {
+                            Log.e("GithubTool", "Failed: ${e.message}", e)
+                        }
                         "Error: Failed to create or update file on GitHub - ${e.message}"
                     }
                 }
@@ -2591,6 +2616,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                             githubCreateBranch(owner, repo, branch, base)
                         }
                     } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) {
+                            Log.e("GithubTool", "Failed: ${e.message}", e)
+                        }
                         "Error: Failed to create branch on GitHub - ${e.message}"
                     }
                 }
@@ -2610,6 +2638,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                             githubCreatePullRequest(owner, repo, title, head, base, body)
                         }
                     } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) {
+                            Log.e("GithubTool", "Failed: ${e.message}", e)
+                        }
                         "Error: Failed to create pull request on GitHub - ${e.message}"
                     }
                 }
@@ -2627,6 +2658,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                             githubListFiles(owner, repo, path, ref)
                         }
                     } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) {
+                            Log.e("GithubTool", "Failed: ${e.message}", e)
+                        }
                         "Error: Failed to list files from GitHub - ${e.message}"
                     }
                 }
@@ -2705,6 +2739,10 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
 
                 else -> "Error: Unknown tool call"
+            }
+            val resultJson = result
+            if (BuildConfig.DEBUG) {
+                Log.d("ToolExec", "Tool result for ${toolCall.function.name}: $resultJson")
             }
             toolResults.add(
                 FlexibleMessage(
@@ -3325,6 +3363,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
                 "File: $path\nSHA: $sha\nSize: $size bytes\n\nContent:\n$decodedText"
             } catch (e: Exception) {
+                if (BuildConfig.DEBUG) {
+                    Log.e("GithubTool", "Failed: ${e.message}", e)
+                }
                 "Error: Failed to fetch file from GitHub – ${e.message}"
             }
         }
@@ -3399,6 +3440,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
                 "Successfully updated/created file '$path'.\nCommit: $commitHtmlUrl\nFile: $fileHtmlUrl"
             } catch (e: Exception) {
+                if (BuildConfig.DEBUG) {
+                    Log.e("GithubTool", "Failed: ${e.message}", e)
+                }
                 "Error: Failed to create or update file on GitHub – ${e.message}"
             }
         }
@@ -3474,6 +3518,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
                 "Successfully created branch '$branch' from base commit $baseSha."
             } catch (e: Exception) {
+                if (BuildConfig.DEBUG) {
+                    Log.e("GithubTool", "Failed: ${e.message}", e)
+                }
                 "Error: Failed to create branch on GitHub – ${e.message}"
             }
         }
@@ -3524,6 +3571,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
                 "Successfully created Pull Request #$prNumber.\nLink: $htmlUrl"
             } catch (e: Exception) {
+                if (BuildConfig.DEBUG) {
+                    Log.e("GithubTool", "Failed: ${e.message}", e)
+                }
                 "Error: Failed to create Pull Request on GitHub – ${e.message}"
             }
         }
@@ -3586,6 +3636,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
                 sb.toString()
             } catch (e: Exception) {
+                if (BuildConfig.DEBUG) {
+                    Log.e("GithubTool", "Failed: ${e.message}", e)
+                }
                 "Error: Failed to list files from GitHub – ${e.message}"
             }
         }
